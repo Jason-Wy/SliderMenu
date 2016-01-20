@@ -1,0 +1,2 @@
+# SliderMenu
+写的简单的上下对应菜单，可以在rootView里面添加自己想要的View，初步是使用Delegate方法来刷新，随后优化时考虑使用通知来处理。
