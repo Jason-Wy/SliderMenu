@@ -8,13 +8,9 @@
 
 #import "WYRootScrollView.h"
 
-#import "WYTopScrollView.h"
-#import "WYTestTableView.h"
-
 #import "Macros.h"
 
-
-#define TableStartTag 300;
+#define TableStartTag 600;
 #define POSITIONID (int)(scrollView.contentOffset.x/320)
 
 @implementation WYRootScrollView
@@ -24,21 +20,22 @@
 
 @synthesize viewArray;
 
-+ (WYRootScrollView *)shareInstance {
-    static WYRootScrollView *_instance;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _instance=[[self alloc] initWithFrame:CGRectMake(0, 44+IOS7_STATUS_BAR_HEGHT, WIDTH, viewHeight-44)];
-    });
-    return _instance;
-}
+//+ (WYRootScrollView *)shareInstance {
+//    static WYRootScrollView *_instance;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        _instance=[[self alloc] initWithFrame:CGRectMake(0, 44+viewOriginY, WIDTH, viewHeight-44)];
+//    });
+//    return _instance;
+//}
 
 - (id)initWithFrame:(CGRect)frame
 {
+    frame = CGRectMake(0, 44+viewOriginY, WIDTH, viewHeight-44);
     self = [super initWithFrame:frame];
     if (self) {
         self.delegate = self;
-        self.backgroundColor = [UIColor lightGrayColor];
+        self.backgroundColor = [UIColor clearColor];
         self.pagingEnabled = YES;
         self.userInteractionEnabled = YES;
         self.bounces = NO;
@@ -48,6 +45,12 @@
         
         userContentOffsetX = 0;
         currentPage = 0;
+        
+        
+        if ([self respondsToSelector:@selector(adjustTopViewPageWithNotification:)]) {
+            [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(adjustTopViewPageWithNotification:) name:NOTIFICATIONPOSTTOROOTVIEW object:nil];
+        }
+        
     }
     return self;
 }
@@ -61,6 +64,9 @@
         [self addSubview:view];
     }
     self.contentSize = CGSizeMake(320*[viewArray count], viewHeight-44);
+    //FIXME:这里是第一次加载页面时需要调用的加载首页数据
+//    [self loadData];
+    
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -114,6 +120,8 @@
 {
     CGFloat pagewidth = self.frame.size.width;
     int page = floor((self.contentOffset.x - pagewidth/viewArray.count)/pagewidth)+1;
+    page += TableStartTag;
+    //当前加载数据的view
     [self.delegateRoot loadDataPageWithRow:page];
     
 }
@@ -121,10 +129,23 @@
 //滚动后修改顶部滚动条
 - (void)adjustTopScrollViewButton:(UIScrollView *)scrollView
 {
-    [[WYTopScrollView shareInstance] setButtonUnSelect];
-    [WYTopScrollView shareInstance].scrollViewSelectedChannelID = POSITIONID+100;
-    [[WYTopScrollView shareInstance] setButtonSelect];
-    [[WYTopScrollView shareInstance] setScrollViewContentOffset];
+    [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFICATIONPOSTTOTOPVIEW object:nil userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%d",POSITIONID] forKey:@"positionid"]];
 }
+
+- (void)adjustTopViewPageWithNotification:(NSNotification *)notification
+{
+    NSDictionary *dict = [notification userInfo];
+    NSInteger page = [[dict objectForKey:@"buttonid"] integerValue];
+    
+    
+    self.contentOffset = CGPointMake(page*320, 0);
+    [self loadData];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:NOTIFICATIONPOSTTOROOTVIEW object:nil];
+}
+
 
 @end

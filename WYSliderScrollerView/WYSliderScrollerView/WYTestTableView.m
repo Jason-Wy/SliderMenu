@@ -13,7 +13,7 @@
 @implementation WYTestTableView
 
 
-- (instancetype)initWithFrame:(CGRect)frame withTag:(NSInteger )viewId
+- (instancetype)initWithFrame:(CGRect)frame
 {
     
     self = [super initWithFrame:frame];
@@ -23,15 +23,13 @@
         
         [self addSubview:bgView];
         
-        tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, WIDTH, frame.size.height)];
-        tableView.delegate = self;
-        tableView.dataSource = self;
-        tableView.tag = 300+viewId;
-        tableView.backgroundColor = [UIColor clearColor];
-        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        contentTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, WIDTH, frame.size.height)];
+        contentTableView.delegate = self;
+        contentTableView.dataSource = self;
+        contentTableView.backgroundColor = [UIColor clearColor];
+        contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
-        [bgView addSubview:tableView];
-        contentStr = @"0000000000000000000000000000";
+        [bgView addSubview:contentTableView];
     }
     return self;
     
@@ -40,20 +38,83 @@
 - (void)loadRefreshData:(NSArray *)data
 {
     NSLog(@"data  %@",data);
+    dataArray = data;
     contentStr = data[0];
-    [tableView reloadData];
+    [contentTableView reloadData];
+}
+
+
+#pragma mark - UITableView
+- (UIView *)creatWhiteView
+{
+    if (whiteView == nil) {
+        whiteView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, WIDTH, 100)];
+        whiteView.backgroundColor = [UIColor clearColor];
+        
+        UILabel *contentLable = [[UILabel alloc]initWithFrame:whiteView.frame];
+        contentLable.backgroundColor = UIColorFromRGB(0xf6f6f6);
+        contentLable.textColor = UIColorFromRGB(0x848484);
+        contentLable.textAlignment = NSTextAlignmentCenter;
+        contentLable.font = [UIFont systemFontOfSize:13];
+        contentLable.text = @"正在加载数据。。。";
+        [whiteView addSubview:contentLable];
+        
+    }
+    
+    return whiteView;
+    
 }
 
 
 #pragma mark - UITableView
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    if (dataArray == nil) {
+        return 1;
+    }
+    else
+    {
+        return dataArray.count;
+    }
+    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 18;
+    if (dataArray == nil) {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+//section头部间距
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (dataArray == nil) {
+        return 100;
+    }
+    else
+    {
+        return 10;
+    }
+}
+//section头部视图
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if (dataArray == nil) {
+        return [self creatWhiteView];
+    }
+    else
+    {
+        UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, WIDTH, 100)];
+        view.backgroundColor = [UIColor clearColor];
+        
+        return view;
+    }
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -76,7 +137,7 @@
         
     }
     tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    cell.backgroundColor = [UIColor greenColor];
+    cell.backgroundColor = [UIColor colorWithRed:0.5 green:0.7 blue:0.8 alpha:1.0];
     
     cell.textLabel.text = contentStr;
     

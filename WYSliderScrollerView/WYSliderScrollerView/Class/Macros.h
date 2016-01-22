@@ -19,6 +19,7 @@
 #define WIDTH [UIScreen mainScreen].bounds.size.width
 #define HEIGHT [UIScreen mainScreen].bounds.size.height
 #define viewHeight HEIGHT-IOS7_STATUS_BAR_HEGHT
+#define viewOriginY ( IS_IOS7 ? 64.0 : 44.0)
 
 
 

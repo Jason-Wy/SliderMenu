@@ -10,13 +10,16 @@
 
 @interface WYTestTableView : UIView<UITableViewDataSource,UITableViewDelegate>
 {
-    UITableView *tableView;
+    UITableView *contentTableView;
     
+    NSArray *dataArray;
+    
+    UIView *whiteView;
     NSString *contentStr;
 }
 
 //创建方法
-- (instancetype)initWithFrame:(CGRect)frame withTag:(NSInteger )viewId;
+- (instancetype)initWithFrame:(CGRect)frame;
 //需实现的刷新数据方法
 - (void)loadRefreshData:(NSArray *)data;
 

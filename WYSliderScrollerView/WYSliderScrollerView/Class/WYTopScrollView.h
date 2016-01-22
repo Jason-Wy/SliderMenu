@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "WYTopScrollView.h"
 
+
+//通知，主要是Top和Rootview之间联系使用
+#define NOTIFICATIONPOSTTOROOTVIEW   @"TopViewNatification"
+#define NOTIFICATIONPOSTTOTOPVIEW   @"RootViewNatification"
+
+
 @interface WYTopScrollView : UIScrollView<UIScrollViewDelegate>
 {
     NSArray *nameArray;
@@ -17,6 +23,8 @@
     
     UIImageView *shadowImageView;   //选中阴影
 }
+
+
 @property (nonatomic, retain) NSArray *nameArray;
 
 @property(nonatomic,retain)NSMutableArray *buttonOriginXArray;
@@ -24,11 +32,13 @@
 
 @property (nonatomic, assign) NSInteger scrollViewSelectedChannelID;
 
-+ (WYTopScrollView *)shareInstance;
+//+ (WYTopScrollView *)shareInstance;
 /**
- *  加载顶部标签
+ *    加载顶部标签
+ *
+ *  @param segmentPages 顶部被平均分割成几份
  */
-- (void)initWithNameButtons;
+- (void)initWithNameButtons:(NSInteger )segmentPages;
 /**
  *  滑动撤销选中按钮
  */

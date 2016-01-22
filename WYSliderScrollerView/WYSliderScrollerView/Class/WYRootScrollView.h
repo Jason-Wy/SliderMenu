@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "WYTopScrollView.h"
+
 @protocol WYRootScrollViewDelegate <NSObject>
 
 - (void)loadDataPageWithRow:(NSInteger )row;
@@ -17,7 +19,7 @@
 @interface WYRootScrollView : UIScrollView <UIScrollViewDelegate>
 {
     NSArray *viewArray;
-
+    
     CGFloat userContentOffsetX;
     BOOL isLeftScroll;
 }
@@ -25,8 +27,11 @@
 @property (nonatomic ,retain) id <WYRootScrollViewDelegate> delegateRoot;
 @property (nonatomic, retain) NSArray *viewArray;
 
-+ (WYRootScrollView *)shareInstance;
+//+ (WYRootScrollView *)shareInstance;
 
+/**
+ *  加载页面，屏蔽首次加载数据
+ */
 - (void)initWithViews;
 /**
  *  加载主要内容
